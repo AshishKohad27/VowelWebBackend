@@ -1,11 +1,21 @@
 const dataModel = require("../Model/data.model");
 
-const getData = async () => {
+let newPage = 1
+let newLimit = 12;
+const GetData = async ({ page }) => {
+
     try {
-        let data = await dataModel.find({});
+        let limit = 12;
+        if (!page) {
+            page = 1
+        } else {
+            newPage = page;
+        }
+        let data = await dataModel.find({}).limit(limit).skip((+page - 1) * limit);
+
         return {
             data: data,
-            length: data.length,
+            length: data.length || 0,
             flag: true,
             message: "Getting data",
             desc: "",
@@ -20,21 +30,18 @@ const getData = async () => {
     }
 };
 
-const endYearFilter = async ({ filterYear }) => {
-    console.log("filterYear:", filterYear);
+const GetDataById = async ({ _id }) => {
     try {
-        let data = await dataModel.find({ end_year: filterYear });
+        let data = await dataModel.find({ _id });
         return {
-            filter: "endYear",
             data: data,
-            length: data.length,
+            length: data.length || 0,
             flag: true,
             message: "Getting data",
             desc: "",
         };
     } catch (e) {
         return {
-            filter: "endYear",
             data: [],
             flag: false,
             message: "Error occurs",
@@ -43,21 +50,23 @@ const endYearFilter = async ({ filterYear }) => {
     }
 };
 
-const CountryFilter = async ({ filterCountry }) => {
-    console.log("filterCountry:", filterCountry);
+
+const AddData = async ({ image, title, price, mrp, category, quantity, discount }) => {
     try {
-        let data = await dataModel.find({ country: filterCountry });
+
+        let data = new dataModel({ image, title, price, mrp, category, quantity, discount });
+        await data.save();
+
+        let getD = await dataModel.find({}).limit(newLimit).skip((+newPage - 1) * newLimit);;
         return {
-            filter: "country",
-            data: data,
-            length: data.length,
+            data: getD,
+            length: getD.length || 0,
             flag: true,
-            message: "Getting data",
+            message: "Item Added Successfully",
             desc: "",
         };
     } catch (e) {
         return {
-            filter: "country",
             data: [],
             flag: false,
             message: "Error occurs",
@@ -66,21 +75,20 @@ const CountryFilter = async ({ filterCountry }) => {
     }
 };
 
-const CityFilter = async ({ filterCity }) => {
-    console.log("filterCity:", filterCity);
+const EditData = async ({ _id, image, title, price, mrp, category, quantity, discount }) => {
     try {
-        let data = await dataModel.find({ city: filterCity });
+        await dataModel.findByIdAndUpdate({ _id }, { image, title, price, mrp, category, quantity, discount });
+
+        let getD = await dataModel.find({}).limit(newLimit).skip((+newPage - 1) * newLimit);;
         return {
-            filter: "city",
-            data: data,
-            length: data.length,
+            data: getD,
+            length: getD.length || 0,
             flag: true,
-            message: "Getting data",
+            message: "Item Edit Successfully",
             desc: "",
         };
     } catch (e) {
         return {
-            filter: "city",
             data: [],
             flag: false,
             message: "Error occurs",
@@ -89,21 +97,19 @@ const CityFilter = async ({ filterCity }) => {
     }
 };
 
-const RegionFilter = async ({ filterRegion }) => {
-    console.log("filterRegion:", filterRegion);
+const DeleteData = async ({ _id }) => {
     try {
-        let data = await dataModel.find({ region: filterRegion });
+        await dataModel.findByIdAndDelete({ _id });
+        let getD = await dataModel.find({}).limit(newLimit).skip((+newPage - 1) * newLimit);;
         return {
-            filter: "region",
-            data: data,
-            length: data.length,
+            data: getD,
+            length: getD.length || 0,
             flag: true,
-            message: "Getting data",
+            message: "Item Delete Successfully",
             desc: "",
         };
     } catch (e) {
         return {
-            filter: "region",
             data: [],
             flag: false,
             message: "Error occurs",
@@ -111,107 +117,10 @@ const RegionFilter = async ({ filterRegion }) => {
         };
     }
 };
-
-const SectorFilter = async ({ filterSector }) => {
-    console.log("filterSector:", filterSector);
-    try {
-        let data = await dataModel.find({ sector: filterSector });
-        return {
-            filter: "sector",
-            data: data,
-            length: data.length,
-            flag: true,
-            message: "Getting data",
-            desc: "",
-        };
-    } catch (e) {
-        return {
-            filter: "sector",
-            data: [],
-            flag: false,
-            message: "Error occurs",
-            desc: e.message,
-        };
-    }
-};
-
-const TopicsFilter = async ({ filterTopic }) => {
-    console.log("filterTopic:", filterTopic);
-    try {
-        let data = await dataModel.find({ topic: filterTopic });
-        return {
-            filter: "topic",
-            data: data,
-            length: data.length,
-            flag: true,
-            message: "Getting data",
-            desc: "",
-        };
-    } catch (e) {
-        return {
-            filter: "topic",
-            data: [],
-            flag: false,
-            message: "Error occurs",
-            desc: e.message,
-        };
-    }
-};
-
-const SourceFilter = async ({ filterSource }) => {
-    console.log("filterSource:", filterSource);
-    try {
-        let data = await dataModel.find({ source: filterSource });
-        return {
-            filter: "source",
-            data: data,
-            length: data.length,
-            flag: true,
-            message: "Getting data",
-            desc: "",
-        };
-    } catch (e) {
-        return {
-            filter: "source",
-            data: [],
-            flag: false,
-            message: "Error occurs",
-            desc: e.message,
-        };
-    }
-};
-
-const PestleFilter = async ({ filterPestle }) => {
-    console.log("filterPestle:", filterPestle);
-    try {
-        let data = await dataModel.find({ pestle: filterPestle });
-        return {
-            filter: "pestle",
-            data: data,
-            length: data.length,
-            flag: true,
-            message: "Getting data",
-            desc: "",
-        };
-    } catch (e) {
-        return {
-            filter: "pestle",
-            data: [],
-            flag: false,
-            message: "Error occurs",
-            desc: e.message,
-        };
-    }
-};
-
 module.exports = {
-    getData,
-    endYearFilter,
-    CountryFilter,
-    CityFilter,
-    RegionFilter,
-    SectorFilter,
-    TopicsFilter,
-    SourceFilter,
-    PestleFilter
+    GetData,
+    AddData,
+    EditData,
+    DeleteData,
+    GetDataById
 };

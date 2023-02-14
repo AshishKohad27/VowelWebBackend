@@ -1,19 +1,16 @@
 const express = require("express");
 const {
-  getData,
-  endYearFilter,
-  CountryFilter,
-  CityFilter,
-  RegionFilter,
-  SectorFilter,
-  TopicsFilter,
-  SourceFilter,
-  PestleFilter,
+  AddData,
+  DeleteData,
+  EditData,
+  GetData,
+  GetDataById
 } = require("../Controller/data.controller");
 const dataRoute = express();
 
 dataRoute.get("/", async (req, res) => {
-  const { data, flag, message, desc, length } = await getData();
+  let { page } = req.query
+  const { data, flag, message, desc, length } = await GetData({ page });
   if (flag) {
     return res.status(201).send({ length, message, desc, data });
   } else {
@@ -21,99 +18,64 @@ dataRoute.get("/", async (req, res) => {
   }
 });
 
-dataRoute.post("/endyear", async (req, res) => {
-  const { filterYear } = req.body;
-  const { data, flag, message, desc, length, filter } = await endYearFilter({
-    filterYear,
-  });
+dataRoute.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log('id:', id)
+  const { data, flag, message, desc, length } = await GetDataById({ _id: id });
   if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
+    return res.status(201).send({ length, message, desc, data });
   } else {
-    return res.status(401).send({ filter, message, desc, data });
+    return res.status(401).send({ message, desc, data });
   }
 });
 
-dataRoute.post("/country", async (req, res) => {
-  const { filterCountry } = req.body;
-  const { data, flag, message, desc, length, filter } = await CountryFilter({
-    filterCountry,
+dataRoute.post("/add", async (req, res) => {
+  const { image, title, price, mrp, category, quantity, discount } = req.body;
+  const { data, flag, message, desc, length } = await AddData({
+    image,
+    title,
+    price,
+    mrp,
+    category,
+    quantity,
+    discount,
   });
   if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
+    return res.status(201).send({ length, message, desc, data });
   } else {
-    return res.status(401).send({ filter, message, desc, data });
+    return res.status(401).send({ message, desc, data });
   }
 });
 
-dataRoute.post("/city", async (req, res) => {
-  const { filterCity } = req.body;
-  const { data, flag, message, desc, length, filter } = await CityFilter({
-    filterCity,
-  });
+dataRoute.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  // console.log('_id:', id)
+  const { data, flag, message, desc, length } = await DeleteData({ _id: id });
   if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
+    return res.status(201).send({ length, message, desc, data });
   } else {
-    return res.status(401).send({ filter, message, desc, data });
+    return res.status(401).send({ message, desc, data });
   }
+  res.send("hello");
 });
 
-dataRoute.post("/region", async (req, res) => {
-  const { filterRegion } = req.body;
-  const { data, flag, message, desc, length, filter } = await RegionFilter({
-    filterRegion,
+dataRoute.patch("/", async (req, res) => {
+  const { _id, image, title, price, mrp, category, quantity, discount } =
+    req.body;
+  const { data, flag, message, desc, length } = await EditData({
+    _id,
+    image,
+    title,
+    price,
+    mrp,
+    category,
+    quantity,
+    discount,
   });
   if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
+    return res.status(201).send({ length, message, desc, data });
   } else {
-    return res.status(401).send({ filter, message, desc, data });
-  }
-});
-
-dataRoute.post("/sector", async (req, res) => {
-  const { filterSector } = req.body;
-  const { data, flag, message, desc, length, filter } = await SectorFilter({
-    filterSector,
-  });
-  if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
-  } else {
-    return res.status(401).send({ filter, message, desc, data });
-  }
-});
-
-dataRoute.post("/topic", async (req, res) => {
-  const { filterTopic } = req.body;
-  const { data, flag, message, desc, length, filter } = await TopicsFilter({
-    filterTopic,
-  });
-  if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
-  } else {
-    return res.status(401).send({ filter, message, desc, data });
-  }
-});
-
-dataRoute.post("/source", async (req, res) => {
-  const { filterSource } = req.body;
-  const { data, flag, message, desc, length, filter } = await SourceFilter({
-    filterSource,
-  });
-  if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
-  } else {
-    return res.status(401).send({ filter, message, desc, data });
-  }
-});
-
-dataRoute.post("/pestle", async (req, res) => {
-  const { filterPestle } = req.body;
-  const { data, flag, message, desc, length, filter } = await PestleFilter({
-    filterPestle,
-  });
-  if (flag) {
-    return res.status(201).send({ filter, length, message, desc, data });
-  } else {
-    return res.status(401).send({ filter, message, desc, data });
+    return res.status(401).send({ message, desc, data });
   }
 });
 
