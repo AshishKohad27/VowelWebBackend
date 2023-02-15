@@ -1,6 +1,5 @@
 const cartModel = require("../Model/cart.model");
 const historyModel = require("../Model/history.model");
-const userModel = require("../model/user.model");
 
 const GetCart = async () => {
     try {
@@ -86,11 +85,6 @@ const addItemInCart = async ({
         //     userID,
         // });
         // await history.save();
-
-        let user = await userModel.findByIdAndUpdate(
-            { _id: userID },
-            { quantity: quantityUser }
-        );
 
         let getD = await cartModel.find({}).populate({ path: "userID" });
         return {
