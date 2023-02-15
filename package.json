@@ -2,8 +2,9 @@
   "name": "blackcoffer-backend",
   "version": "1.0.0",
   "description": "",
+
   "scripts": {
-    "start": "node src/index.js"
+    "start": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",
